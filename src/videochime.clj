@@ -8,6 +8,8 @@
 (def ^:dynamic *auth-token* "14fce7a31e4b08587081ee147")
 (def url-base "http://data.brightcove.com/analytics-api/data/videocloud/account/")
 (def counters (atom {}))
+;; # of ms during which chimes should chime
+(def ^:dynamic *chime-length* 3000)
 
 (defn build-url
   "Construct a url for a request to the analytics api.
@@ -62,6 +64,27 @@
     (_ :when neg?) 80
     (_ :when zero?) 70
     (_ :when pos?) 65))
+
+(defn schedule-chime
+  "Chime with pitch pitc in (+ (now) delta)"
+  [delta pitch]
+  (at (+ (now) delta) (chime pitch)))
+
+(defn random-time
+  "Return a random time between 0 and *chime-length* seconds"
+  []
+  (rand *chime-length*))
+
+(defn watch-counters
+  "A watch to trigger the chimes when the counters are updated"
+  [_ _ old-val new-val]
+  ; the keys of new-val and old-val shouldn't change
+  (->> (keys new-val)
+       (map #(calculate-pitch (old-val %) (new-val %)))
+       (map #(schedule-chime (random-time) %))
+       doall))
+
+(add-watch counters :chimes watch-counters)
 
 (defn -main
   "I don't do a whole lot."
