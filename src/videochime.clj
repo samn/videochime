@@ -19,7 +19,7 @@
     (str url-base *account-id* "/" (name resource) "/" id)
     (str url-base *account-id*)))
 
-(defn get-data
+(defn fetch-data
   "Returns the parsed body of a request to the Analytics API.
   A specific resource & id are optional"
   [& [resource id]]
@@ -29,6 +29,19 @@
       (http/get url {:headers headers})
       :body
       (json/parse-string))))
+
+(defn extract-current-value
+  "Return a k/v pair of key & the last value of data"
+  [[key data]]
+  [key (-> data last second)])
+
+(defn get-current-counters
+  "Fetch the most recent values for the values tracked as counters.
+  Gets data from the Analytics API using fetch-data and extracts the
+  most recent value for each event type in data"
+  []
+  (apply hash-map (flatten (map extract-current-value ((fetch-data) "data")))))
+
 
 (defn -main
   "I don't do a whole lot."
