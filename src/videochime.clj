@@ -10,7 +10,7 @@
 (def counters (atom {}))
 ;; # of ms during which chimes should chime
 (def ^:dynamic *chime-length* 3000)
-(def ^:dynamic *pitch-variation* 3)
+(def ^:dynamic *pitch-variation* 4)
 
 (defn build-url
   "Construct a url for a request to the analytics api.
@@ -52,7 +52,7 @@
   (reset! counters (fetch-current-counters)))
 
 ;; TODO: bump up the volume for lower pitches
-(definst chime [note 60 vol 1]
+(definst chime [note 60 vol 3]
   (let [src (sin-osc (* 0.75 (midicps note)))
         env (env-gen (perc 0.01 1.0 vol))]
     (* src env)))
