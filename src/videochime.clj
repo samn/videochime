@@ -1,7 +1,8 @@
 (ns videochime
   (:require [clojure.core.match :refer [match]]
             [overtone.live :refer :all]
-            [clj-http.client :as http]))
+            [clj-http.client :as http]
+            [cheshire.core :refer [parse-string]]))
 
 (def ^:dynamic *account-id* 1160438696001)
 (def ^:dynamic *auth-token* "14fce7a31e4b08587081ee147")
