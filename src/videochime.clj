@@ -48,10 +48,20 @@
   []
   (reset! counters (fetch-current-counters)))
 
-(definst chime [note 60]
-  (let [src (sin-osc (midicps note))
-        env (env-gen (perc 0.01 1.0))]
+;; TODO: bump up the volume for lower pitches
+(definst chime [note 60 vol 1]
+  (let [src (sin-osc (* 0.75 (midicps note)))
+        env (env-gen (perc 0.01 1.0 vol))]
     (* src env)))
+
+(defn calculate-pitch
+  "Calculate the pitch for a chime given the old and new value
+  of a counter"
+  [old new]
+  (match (compare old new)
+    (_ :when neg?) 80
+    (_ :when zero?) 70
+    (_ :when pos?) 65))
 
 (defn -main
   "I don't do a whole lot."
