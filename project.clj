@@ -6,4 +6,5 @@
   :dependencies [[org.clojure/clojure "1.4.0"]
                  [overtone "0.6.0"]
                  [org.clojure/core.match "0.2.0-alpha9"]
-                 [clj-http "0.4.3"]])
+                 [clj-http "0.4.3"]
+                 [midje "1.4.0" :scope "test"]])
