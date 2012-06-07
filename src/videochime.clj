@@ -48,6 +48,10 @@
   []
   (reset! counters (fetch-current-counters)))
 
+(definst chime [note 60]
+  (let [src (sin-osc (midicps note))
+        env (env-gen (perc 0.01 1.0))]
+    (* src env)))
 
 (defn -main
   "I don't do a whole lot."
