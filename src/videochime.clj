@@ -10,6 +10,7 @@
 (def counters (atom {}))
 ;; # of ms during which chimes should chime
 (def ^:dynamic *chime-length* 3000)
+(def ^:dynamic *pitch-variation* 3)
 
 (defn build-url
   "Construct a url for a request to the analytics api.
@@ -60,10 +61,11 @@
   "Calculate the pitch for a chime given the old and new value
   of a counter"
   [old new]
-  (match (compare old new)
-    (_ :when neg?) 80
-    (_ :when zero?) 70
-    (_ :when pos?) 65))
+  (let [pitch (match (compare old new)
+                (_ :when neg?) 80
+                (_ :when zero?) 70
+                (_ :when pos?) 65)]
+    (+ pitch (rand-int *pitch-variation*))))
 
 (defn schedule-chime
   "Chime with pitch pitc in (+ (now) delta)"
