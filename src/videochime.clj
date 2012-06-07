@@ -1,4 +1,4 @@
-(ns videochime.core)
+(ns videochime)
 
 (defn -main
   "I don't do a whole lot."
