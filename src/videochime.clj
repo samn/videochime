@@ -7,6 +7,7 @@
 (def ^:dynamic *account-id* 1160438696001)
 (def ^:dynamic *auth-token* "14fce7a31e4b08587081ee147")
 (def url-base "http://data.brightcove.com/analytics-api/data/videocloud/account/")
+(def counters (atom {}))
 
 (defn build-url
   "Construct a url for a request to the analytics api.
@@ -35,12 +36,17 @@
   [[key data]]
   [key (-> data last second)])
 
-(defn get-current-counters
+(defn fetch-current-counters
   "Fetch the most recent values for the values tracked as counters.
   Gets data from the Analytics API using fetch-data and extracts the
   most recent value for each event type in data"
   []
   (apply hash-map (flatten (map extract-current-value ((fetch-data) "data")))))
+
+(defn update-counters!
+  "Updates the counters atom with fresh data from the Analytics API"
+  []
+  (reset! counters (fetch-current-counters)))
 
 
 (defn -main
