@@ -59,15 +59,18 @@
         env (env-gen (perc 0.01 1.0 vol))]
     (* src env)))
 
-(defn calculate-pitch
+(defmulti calculate-pitch
   "Calculate the pitch for a chime given the old and new value
   of a counter"
-  [old new]
+  (fn [v _] (first v)))
+
+(defmethod calculate-pitch :default
+  [[_ old] [_ new]]
   (let [pitch (match (compare old new)
                 (_ :when neg?) 80
                 (_ :when zero?) 70
                 (_ :when pos?) 65)]
-    (+ pitch (rand-int *pitch-variation*))))
+    (+ pitch (rand *pitch-variation*))))
 
 (defn schedule-chime
   "Chime with pitch pitc in (+ (now) delta)"
@@ -83,8 +86,7 @@
   "A watch to trigger the chimes when the counters are updated"
   [_ _ old-val new-val]
   ; the keys of new-val and old-val shouldn't change
-  (->> (keys new-val)
-       (map #(calculate-pitch (old-val %) (new-val %)))
+  (->> (map calculate-pitch old-val new-val)
        (map #(schedule-chime (random-time) %))
        doall))
 
