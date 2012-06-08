@@ -7,7 +7,7 @@
 (def ^:dynamic *account-id* 1160438696001)
 (def ^:dynamic *auth-token* "14fce7a31e4b08587081ee147")
 (def url-base "http://data.brightcove.com/analytics-api/data/videocloud/account/")
-(def counters (atom {}))
+(def counters (atom (sorted-map)))
 ;; # of ms during which chimes should chime
 (def ^:dynamic *chime-length* 3000)
 (def ^:dynamic *pitch-variation* 4)
@@ -41,15 +41,17 @@
 
 (defn fetch-current-counters
   "Fetch the most recent values for the values tracked as counters.
-  Gets data from the Analytics API using fetch-data and extracts the
-  most recent value for each event type in data"
-  []
-  (apply hash-map (flatten (map extract-current-value ((fetch-data) "data")))))
+  Gets data from the Analytics API using fetch-data and extracts 
+  the most recent value for each event type in data"
+  [counters]
+  (->> ((fetch-data) "data")
+       (map extract-current-value)
+       (reduce #(apply assoc %1 %2) counters)))
 
 (defn update-counters!
-  "Updates the counters atom with fresh data from the Analytics API"
+  "Updates the counters with fresh data from the Analytics API"
   []
-  (reset! counters (fetch-current-counters)))
+  (swap! counters fetch-current-counters)) 
 
 ;; TODO: bump up the volume for lower pitches
 (definst chime [note 60 vol 3]
