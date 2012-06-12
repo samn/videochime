@@ -102,4 +102,5 @@
   [min-delay max-delay]
   (let [min (Long/parseLong min-delay)
         max (Long/parseLong max-delay)]
+    (update-counters!)
     (run! min max)))
