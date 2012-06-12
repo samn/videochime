@@ -1,4 +1,5 @@
 (ns videochime
+  (:gen-class)
   (:require [clojure.core.match :refer [match]]
             [overtone.live :refer :all]
             [clj-http.client :as http]
@@ -55,7 +56,7 @@
 
 ;; TODO: bump up the volume for lower pitches
 (definst chime [note 60 vol 3]
-  (let [src (sin-osc (* 0.75 (midicps note)))
+  (let [src (sin-osc (midicps note))
         env (env-gen (perc 0.01 1.0 vol))]
     (* src env)))
 
@@ -92,7 +93,13 @@
 
 (add-watch counters :chimes watch-counters)
 
+(defn run! [min-delay max-delay]
+  (update-counters!)
+  (Thread/sleep (+ min-delay (rand max-delay)))
+  (recur min-delay max-delay))
+  
 (defn -main
-  "I don't do a whole lot."
-  [& args]
-  (println "Hello, World!"))
+  [min-delay max-delay]
+  (let [min (Long/parseLong min-delay)
+        max (Long/parseLong max-delay)]
+    (run! min max)))
