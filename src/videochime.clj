@@ -35,7 +35,7 @@
 (defn extract-current-value
   "Return a k/v pair of key & the last value of data"
   [[key data]]
-  [key (-> data last second)])
+  [(keyword key) (-> data last second)])
 
 (defn fetch-current-counters
   "Fetch the most recent values for the values tracked as counters.
@@ -51,25 +51,33 @@
   []
   (swap! counters fetch-current-counters)) 
 
-(defmulti calculate-pitch
+(defmulti chime
   "Calculate the pitch for a chime given the old and new value
   of a counter"
-  (fn [v _] (first v)))
+  first)
 
-(defmethod calculate-pitch :default
-  [[_ old] [_ new]]
-  (let [pitch (match (compare old new)
-                (_ :when neg?) 80
-                (_ :when zero?) 70
-                (_ :when pos?) 65)]
-    (+ pitch (rand noise/*pitch-variation*))))
+(defmethod chime :default
+  [[event old new]]
+  (let [raw-pitch (match (compare old new)
+                    (_ :when neg?) 80
+                    (_ :when zero?) 70
+                    (_ :when pos?) 65)
+        pitch (+ raw-pitch (rand noise/*pitch-variation*))]
+    (noise/schedule-chime (noise/random-time) noise/chime pitch)))
+
+(defn merge-hash-tuples
+  "Takes tuples like [k v] (like mapping over a hash)
+  and returns a list composed of the key and all values.
+  Assumes the key (first element) is the same for all tuples."
+  [& tuples]
+  (cons (ffirst tuples) (map second tuples)))
 
 (defn watch-counters
   "A watch to trigger the chimes when the counters are updated"
   [_ _ old-val new-val]
   ; the keys of new-val and old-val shouldn't change
-  (->> (map calculate-pitch old-val new-val)
-       (map #(noise/schedule-chime (noise/random-time) %))
+  (->> (map merge-hash-tuples new-val old-val)
+       (map chime)
        doall))
 
 (add-watch counters :chimes watch-counters)

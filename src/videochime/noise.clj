@@ -13,8 +13,8 @@
 
 (defn schedule-chime
   "Chime with pitch pitc in (+ (now) delta)"
-  [delta pitch]
-  (at (+ (now) delta) (chime pitch)))
+  [delta inst pitch]
+  (at (+ (now) delta) (inst pitch)))
 
 (defn random-time
   "Return a random time between 0 and *chime-length* seconds"
