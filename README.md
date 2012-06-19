@@ -1,15 +1,12 @@
 # videochime
-
-I'm an app. Or maybe I'm a library? I haven't decided yet. 
-
-The choice is up to you!
+A passive gauge of video performance
 
 ## Usage
+Videochime uses an external supercollider server, so you'll need to download and install [supercollider](http://supercollider.sourceforge.net/downloads/)
 
-FIXME
 
 ## License
 
-Copyright © 2012 FIXME
+Copyright © 2012 samn
 
 Distributed under the Eclipse Public License, the same as Clojure.
