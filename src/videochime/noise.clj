@@ -17,6 +17,6 @@
   (at (+ (now) delta) (inst pitch)))
 
 (defn random-time
-  "Return a random time between 0 and *chime-length* seconds"
+  "Return a random time between 0 and *chime-length* milliseconds"
   []
   (rand *chime-length*))

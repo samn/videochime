@@ -58,12 +58,12 @@
 
 (defmethod chime :default
   [[event old new]]
-  (let [raw-pitch (match (compare old new)
+  (let [pitch (match (compare old new)
                     (_ :when neg?) 80
                     (_ :when zero?) 70
                     (_ :when pos?) 65)
-        pitch (+ raw-pitch (rand noise/*pitch-variation*))]
-    (noise/schedule-chime (noise/random-time) noise/chime pitch)))
+        note (+ pitch (rand noise/*pitch-variation*))]
+    (noise/schedule-chime (noise/random-time) noise/chime note)))
 
 (defn merge-hash-tuples
   "Takes tuples like [k v] (like mapping over a hash)
@@ -76,9 +76,8 @@
   "A watch to trigger the chimes when the counters are updated"
   [_ _ old-val new-val]
   ; the keys of new-val and old-val shouldn't change
-  (->> (map merge-hash-tuples new-val old-val)
-       (map chime)
-       doall))
+  (doall 
+    (map (comp chime merge-hash-tuples) new-val old-val)))
 
 (add-watch counters :chimes watch-counters)
 
