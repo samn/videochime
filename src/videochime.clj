@@ -56,6 +56,15 @@
   of a counter"
   first)
 
+(defmethod chime :video_impression
+  [[event old new]]
+  (if (< (- new old) (* 0.1 old))
+    (noise/schedule-chime (noise/random-time) noise/chime 65)
+    (let [note 85
+          base (- noise/*chime-length* 1000)]
+      (doseq [x (range 3)] 
+        (noise/schedule-chime (+ base (* x 200)) noise/chime note)))))
+
 (defmethod chime :default
   [[event old new]]
   (let [pitch (match (compare old new)
