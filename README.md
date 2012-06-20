@@ -2,7 +2,9 @@
 A passive gauge of video performance
 
 ## Usage
-Videochime uses an external supercollider server, so you'll need to download and install [supercollider](http://supercollider.sourceforge.net/downloads/)
+lein deps
+lein run min-delay max-delay
+min-delay should be at least 3 seconds (the default chiming length)
 
 
 ## License
